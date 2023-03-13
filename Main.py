@@ -1,17 +1,37 @@
+"""
+This script is used to download all attachments files of a given discord channel.
+Parameters :
+    - Authorization : A Discord Token
+    - Channel ID : The Discord ID of the selected Channel
+    - Channel Name : The output folder name 
+"""
+
 import requests as req
 import json
 import os
 import multiprocessing
+import argparse
+
+
+parser = argparse.ArgumentParser(
+                    prog='Discord attachments Downloader',
+                    description='Download all attachments files of a given discord channel')
+
+parser.add_argument('-t', '--token')
+parser.add_argument('-c', '--channel-id')
+parser.add_argument('-o', '--output')
+args = parser.parse_args()
+
 
 #OPEN BROWSER AND LOGIN TO DISCORD
 
 #autorization token, catch via dev mod of browser
 #best in "typing" post request, but can be anywhere
-authorization = ''
+authorization = 'Nzc0NzMzODc5MzQ0NjI3ODIy.GjGf1U.9FE-zmB66eFG_Kig1h5PTe6FRBg1rESPYvwcWs'
 #channel id is last part of url
-channel_id = ''
+channel_id = input("channel_id : ")
 #only for naming output folder
-channel_name = ''
+channel_name = input("channel_name : ")
 
 
 
@@ -44,13 +64,13 @@ def para_img_get(data):
     # grep right data with key
     preurl = data['attachments']
     # not always there are attachmens
-    if len(preurl) > 0:
+    for attachment in preurl:
         # Output is two dimensinal for some reason 
-        urlToDownload = preurl [0]['url']
+        urlToDownload = attachment['url']
         # File name assemble
         suffix = os.path.splitext(urlToDownload)[1]
-        nameForFile = urlToDownload.split("/")[-2]
-        ComplexPathForFile = f'{channel_name}/{nameForFile+suffix}'
+        nameForFile = urlToDownload.split("/")[-1]
+        ComplexPathForFile = f'{channel_name}/{nameForFile}'
         # and request and save file
         if not os.path.isfile(ComplexPathForFile):
             r = req.get(urlToDownload)
